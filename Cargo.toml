@@ -1,0 +1,14 @@
+[package]
+authors = ["Johan Helsing <johanhelsing@gmail.com>"]
+categories = ["game-development"]
+description = "Wrapper around a 2d hash map made for collision broadphase"
+edition = "2021"
+keywords = ["gamedev", "bevy"]
+license = "MIT OR Apache-2.0"
+name = "bevy_spatial_grid_2d"
+repository = "https://github.com/johanhelsing/bevy_spatial_grid_2d"
+version = "0.7.0"
+
+[dependencies]
+bevy = {version = "0.9", default-features = false}
+glam = {version = "0.22", default-features = false} # same as bevy 0.9
