@@ -24,7 +24,7 @@ fn key_from_point(point: Vec2) -> Key {
 
 /// A spatial container that allows querying for entities that share one or more grid cell
 #[derive(Default, Reflect, Debug, Clone)]
-pub struct SparseGrid2d<const TILE_SIZE: usize> {
+pub struct SparseGrid2d<const TILE_SIZE: usize = 1> {
     map: HashMap<Key, Vec<Entity>>,
 }
 
@@ -121,6 +121,7 @@ impl Iterator for KeyIter {
 #[cfg(test)]
 mod tests {
     use bevy::math::vec2;
+    use bevy::prelude::default;
     use bevy::utils::HashSet;
 
     use super::*;
@@ -205,7 +206,7 @@ mod tests {
         let e1 = Entity::from_raw(1);
         let e2 = Entity::from_raw(2);
         let e3 = Entity::from_raw(3);
-        let mut db = SparseGrid2d::<TILE_SIZE>::default();
+        let mut db: SparseGrid2d = default();
         db.insert_aabb(
             Aabb {
                 min: vec2(-h, -h),
