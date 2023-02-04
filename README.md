@@ -1,10 +1,10 @@
-# bevy_spatial_grid_2d
+# bevy_sparse_grid_2d
 
 ![MIT/Apache 2.0](https://img.shields.io/badge/license-MIT%2FApache-blue.svg)
 
-An opinionated 2D spatial grid made for use with Bevy.
+An opinionated 2D sparse grid made for use with Bevy. For storing and querying entities.
 
-Personally, I'm using it for a very simple stupid collision broad phase in a couple of my projects.
+Personally, I'm using it for simple stupid collision broad phase in a couple of my projects.
 
 ## Usage
 
@@ -14,7 +14,7 @@ See tests in lib.rs
 
 The `main` branch targets the latest bevy release.
 
-|bevy|bevy_spatial_grid_2d|
+|bevy|bevy_sparse_grid_2d|
 |---|---|
 |0.9|main|
 
