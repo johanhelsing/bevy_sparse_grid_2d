@@ -11,4 +11,3 @@ version = "0.7.0"
 
 [dependencies]
 bevy = {version = "0.9", default-features = false}
-glam = {version = "0.22", default-features = false} # same as bevy 0.9

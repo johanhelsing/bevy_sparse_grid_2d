@@ -24,14 +24,14 @@ fn key_from_point(point: Vec2) -> Key {
 
 /// A spatial container that allows querying for entities that share one or more grid cell
 #[derive(Default, Reflect, Debug, Clone)]
-pub struct SpatialGrid2d {
+pub struct SparseGrid2d {
     map: HashMap<Key, Vec<Entity>>,
 }
 
 // TODO: make const generic when stable
 const TILE_SIZE: f32 = 1.5;
 
-impl SpatialGrid2d {
+impl SparseGrid2d {
     /// Insert an entity in the given Aabb coordinates
     pub fn insert_aabb(&mut self, aabb: Aabb, entity: Entity) {
         for key in KeyIter::new(aabb) {
@@ -123,7 +123,8 @@ impl Iterator for KeyIter {
 
 #[cfg(test)]
 mod tests {
-    use glam::vec2;
+    use bevy::math::vec2;
+    use bevy::utils::HashSet;
 
     use super::*;
 
@@ -155,7 +156,7 @@ mod tests {
     #[test]
     fn matches() {
         let entity = Entity::from_raw(123);
-        let mut db = SpatialGrid2d::default();
+        let mut db = SparseGrid2d::default();
         db.insert_aabb(
             Aabb {
                 min: vec2(-0.001, -0.001),
@@ -185,6 +186,19 @@ mod tests {
         assert!(keys.contains(&(-1, -1)));
         assert_eq!(keys.len(), 1);
     }
+    #[test]
+    fn query_points() {
+        let mut db = SparseGrid2d::default();
+        let e1 = Entity::from_raw(1);
+        let e2 = Entity::from_raw(2);
+        db.insert_point(vec2(0.5, 0.5), e1);
+        db.insert_point(vec2(0.499, 0.501), e2);
+
+        let matches: HashSet<_> = db.point_iter(vec2(0.499, 0.501)).collect();
+        assert!(matches.contains(&e1));
+        assert!(matches.contains(&e2));
+        assert_eq!(matches.len(), 2);
+    }
 
     #[test]
     fn matches_complex() {
@@ -192,7 +206,7 @@ mod tests {
         let e1 = Entity::from_raw(1);
         let e2 = Entity::from_raw(2);
         let e3 = Entity::from_raw(3);
-        let mut db = SpatialGrid2d::default();
+        let mut db = SparseGrid2d::default();
         db.insert_aabb(
             Aabb {
                 min: vec2(-h, -h),
