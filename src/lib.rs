@@ -24,17 +24,14 @@ fn key_from_point(point: Vec2) -> Key {
 
 /// A spatial container that allows querying for entities that share one or more grid cell
 #[derive(Default, Reflect, Debug, Clone)]
-pub struct SparseGrid2d {
+pub struct SparseGrid2d<const TILE_SIZE: usize> {
     map: HashMap<Key, Vec<Entity>>,
 }
 
-// TODO: make const generic when stable
-const TILE_SIZE: f32 = 1.5;
-
-impl SparseGrid2d {
+impl<const TILE_SIZE: usize> SparseGrid2d<TILE_SIZE> {
     /// Insert an entity in the given Aabb coordinates
     pub fn insert_aabb(&mut self, aabb: Aabb, entity: Entity) {
-        for key in KeyIter::new(aabb) {
+        for key in KeyIter::new::<TILE_SIZE>(aabb) {
             self.map.entry(key).or_default().push(entity);
         }
     }
@@ -50,7 +47,7 @@ impl SparseGrid2d {
     /// may contain duplicates if some entities are in more than one grid cell
     #[inline]
     pub fn aabb_iter(&'_ self, aabb: Aabb) -> impl Iterator<Item = Entity> + '_ {
-        KeyIter::new(aabb)
+        KeyIter::new::<TILE_SIZE>(aabb)
             .filter_map(|key| self.map.get(&key))
             .flatten()
             .copied()
@@ -87,9 +84,9 @@ struct KeyIter {
 }
 
 impl KeyIter {
-    fn new(Aabb { min, max }: Aabb) -> Self {
+    fn new<const TILE_SIZE: usize>(Aabb { min, max }: Aabb) -> Self {
         // convert to key space
-        let s = TILE_SIZE;
+        let s = TILE_SIZE as f32;
         let min = ((min.x / s).floor() as i32, (min.y / s).floor() as i32);
         let max = ((max.x / s).ceil() as i32, (max.y / s).ceil() as i32);
         let width = max.0 - min.0;
@@ -128,9 +125,11 @@ mod tests {
 
     use super::*;
 
+    const TILE_SIZE: usize = 1;
+
     #[test]
     fn keys_single() {
-        let keys: Vec<Key> = KeyIter::new(Aabb {
+        let keys: Vec<Key> = KeyIter::new::<TILE_SIZE>(Aabb {
             min: vec2(0.001, 0.001),
             max: vec2(0.001, 0.001),
         })
@@ -141,7 +140,7 @@ mod tests {
 
     #[test]
     fn keys_four_around_origin() {
-        let keys: Vec<Key> = KeyIter::new(Aabb {
+        let keys: Vec<Key> = KeyIter::new::<TILE_SIZE>(Aabb {
             min: vec2(-0.001, -0.001),
             max: vec2(0.001, 0.001),
         })
@@ -156,7 +155,7 @@ mod tests {
     #[test]
     fn matches() {
         let entity = Entity::from_raw(123);
-        let mut db = SparseGrid2d::default();
+        let mut db = SparseGrid2d::<TILE_SIZE>::default();
         db.insert_aabb(
             Aabb {
                 min: vec2(-0.001, -0.001),
@@ -177,8 +176,8 @@ mod tests {
 
     #[test]
     fn key_negative() {
-        let h = TILE_SIZE / 2.0;
-        let keys: Vec<Key> = KeyIter::new(Aabb {
+        let h = TILE_SIZE as f32 / 2.0;
+        let keys: Vec<Key> = KeyIter::new::<TILE_SIZE>(Aabb {
             min: vec2(-h, -h),
             max: vec2(-h, -h),
         })
@@ -188,7 +187,7 @@ mod tests {
     }
     #[test]
     fn query_points() {
-        let mut db = SparseGrid2d::default();
+        let mut db = SparseGrid2d::<TILE_SIZE>::default();
         let e1 = Entity::from_raw(1);
         let e2 = Entity::from_raw(2);
         db.insert_point(vec2(0.5, 0.5), e1);
@@ -202,11 +201,11 @@ mod tests {
 
     #[test]
     fn matches_complex() {
-        let h = TILE_SIZE / 2.0;
+        let h = TILE_SIZE as f32 / 2.0;
         let e1 = Entity::from_raw(1);
         let e2 = Entity::from_raw(2);
         let e3 = Entity::from_raw(3);
-        let mut db = SparseGrid2d::default();
+        let mut db = SparseGrid2d::<TILE_SIZE>::default();
         db.insert_aabb(
             Aabb {
                 min: vec2(-h, -h),

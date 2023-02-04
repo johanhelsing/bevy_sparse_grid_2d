@@ -15,8 +15,9 @@ use bevy::{
     math::vec2,
 };
 use bevy_sparse_grid_2d::{Aabb, SparseGrid2d};
+const TILE_SIZE: usize = 1; // how wide each cell is
 
-let mut db = SparseGrid2d::default();
+let mut db = SparseGrid2d::<TILE_SIZE>::default();
 let e1 = Entity::from_raw(1);
 let e2 = Entity::from_raw(2);
 db.insert_point(vec2(0.5, 0.5), e1);
