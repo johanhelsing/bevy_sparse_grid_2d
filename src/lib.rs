@@ -30,7 +30,7 @@ pub struct SparseGrid2d<const TILE_SIZE: usize = 1> {
 
 impl<const TILE_SIZE: usize> SparseGrid2d<TILE_SIZE> {
     /// Insert an entity in the given Aabb coordinates
-    pub fn insert_aabb(&mut self, aabb: Aabb, entity: Entity) {
+    pub fn insert_aabb(&mut self, aabb: impl Into<Aabb>, entity: Entity) {
         for key in KeyIter::new::<TILE_SIZE>(aabb) {
             self.map.entry(key).or_default().push(entity);
         }
@@ -46,7 +46,7 @@ impl<const TILE_SIZE: usize> SparseGrid2d<TILE_SIZE> {
     ///
     /// may contain duplicates if some entities are in more than one grid cell
     #[inline]
-    pub fn aabb_iter(&'_ self, aabb: Aabb) -> impl Iterator<Item = Entity> + '_ {
+    pub fn aabb_iter(&'_ self, aabb: impl Into<Aabb>) -> impl Iterator<Item = Entity> + '_ {
         KeyIter::new::<TILE_SIZE>(aabb)
             .filter_map(|key| self.map.get(&key))
             .flatten()
@@ -66,7 +66,7 @@ impl<const TILE_SIZE: usize> SparseGrid2d<TILE_SIZE> {
 
     /// Creates a hash set with all the entities in the grid cells covered by the given Aabb
     #[inline]
-    pub fn query_aabb(&self, aabb: Aabb) -> HashSet<Entity> {
+    pub fn query_aabb(&self, aabb: impl Into<Aabb>) -> HashSet<Entity> {
         self.aabb_iter(aabb).collect()
     }
 
@@ -84,7 +84,8 @@ struct KeyIter {
 }
 
 impl KeyIter {
-    fn new<const TILE_SIZE: usize>(Aabb { min, max }: Aabb) -> Self {
+    fn new<const TILE_SIZE: usize>(aabb: impl Into<Aabb>) -> Self {
+        let Aabb { min, max } = aabb.into();
         // convert to key space
         let s = TILE_SIZE as f32;
         let min = ((min.x / s).floor() as i32, (min.y / s).floor() as i32);
