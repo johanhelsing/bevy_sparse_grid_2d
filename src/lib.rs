@@ -6,6 +6,7 @@ use bevy::{
     reflect::Reflect,
     utils::{HashMap, HashSet},
 };
+use smallvec::SmallVec;
 
 /// Axis aligned bounding box
 #[derive(Reflect, Debug, Default, Clone, Copy, PartialEq)]
@@ -25,7 +26,7 @@ fn key_from_point(point: Vec2) -> Key {
 /// A spatial container that allows querying for entities that share one or more grid cell
 #[derive(Default, Reflect, Debug, Clone)]
 pub struct SparseGrid2d<const TILE_SIZE: usize = 1> {
-    map: HashMap<Key, Vec<Entity>>,
+    map: HashMap<Key, SmallVec<[Entity; 5]>>,
 }
 
 impl<const TILE_SIZE: usize> SparseGrid2d<TILE_SIZE> {

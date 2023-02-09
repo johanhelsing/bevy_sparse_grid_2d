@@ -11,3 +11,4 @@ version = "0.7.0"
 
 [dependencies]
 bevy = {version = "0.9", default-features = false}
+smallvec = { version = "1.6", features = ["const_generics"] } # same as bevy 0.9
