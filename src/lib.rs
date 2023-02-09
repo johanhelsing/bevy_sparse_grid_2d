@@ -74,6 +74,13 @@ impl<const TILE_SIZE: usize> SparseGrid2d<TILE_SIZE> {
     pub fn clear(&mut self) {
         self.map.clear();
     }
+
+    /// Remove all entities from the map, but keep the heap-allocated inner data structures
+    pub fn soft_clear(&mut self) {
+        for (_, vec) in self.map.iter_mut() {
+            vec.clear()
+        }
+    }
 }
 
 struct KeyIter {
