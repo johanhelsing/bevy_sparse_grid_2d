@@ -274,11 +274,14 @@ mod tests {
         let mut db = SparseGrid2d::<10>::default();
         let e1 = Entity::from_raw(1);
         let e2 = Entity::from_raw(2);
+        let e3 = Entity::from_raw(3);
         db.insert_point(vec2(12f32, 15f32), e1);
         db.insert_point(vec2(15f32, 12f32), e2);
+        db.insert_point(vec2(15f32, 20f32), e3);
         let matches: HashSet<_> = db.point_iter(vec2(19.9, 19.9)).collect();
         assert!(matches.contains(&e1));
         assert!(matches.contains(&e2));
+        assert!(!matches.contains(&e3));
         assert_eq!(matches.len(), 2);
     }
 }
