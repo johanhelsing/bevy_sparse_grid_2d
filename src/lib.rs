@@ -19,8 +19,11 @@ pub struct Aabb {
 
 type Key = (i32, i32);
 
-fn key_from_point(point: Vec2) -> Key {
-    (point.x as i32, point.y as i32)
+fn key_from_point<const TILE_SIZE: usize>(point: Vec2) -> Key {
+    (
+        (point.x / TILE_SIZE as f32) as i32,
+        (point.y / TILE_SIZE as f32) as i32,
+    )
 }
 
 /// A spatial container that allows querying for entities that share one or more grid cell
@@ -39,7 +42,7 @@ impl<const TILE_SIZE: usize> SparseGrid2d<TILE_SIZE> {
 
     /// Insert an entity at the given point coordinate
     pub fn insert_point(&mut self, point: Vec2, entity: Entity) {
-        let key = key_from_point(point);
+        let key = key_from_point::<TILE_SIZE>(point);
         self.map.entry(key).or_default().push(entity);
     }
 
@@ -57,7 +60,7 @@ impl<const TILE_SIZE: usize> SparseGrid2d<TILE_SIZE> {
     /// Get an iterator with the entities in the grid cells at the given point
     #[inline]
     pub fn point_iter(&'_ self, point: Vec2) -> impl Iterator<Item = Entity> + '_ {
-        let key = key_from_point(point);
+        let key = key_from_point::<TILE_SIZE>(point);
 
         std::iter::once(key)
             .filter_map(|key| self.map.get(&key))
@@ -264,5 +267,21 @@ mod tests {
             })
             .collect();
         assert_eq!(matches[0], e1);
+    }
+
+    #[test]
+    fn query_points_tilesize_10() {
+        let mut db = SparseGrid2d::<10>::default();
+        let e1 = Entity::from_raw(1);
+        let e2 = Entity::from_raw(2);
+        let e3 = Entity::from_raw(3);
+        db.insert_point(vec2(12f32, 15f32), e1);
+        db.insert_point(vec2(15f32, 12f32), e2);
+        db.insert_point(vec2(15f32, 20f32), e3);
+        let matches: HashSet<_> = db.point_iter(vec2(19.9, 19.9)).collect();
+        assert!(matches.contains(&e1));
+        assert!(matches.contains(&e2));
+        assert!(!matches.contains(&e3));
+        assert_eq!(matches.len(), 2);
     }
 }
