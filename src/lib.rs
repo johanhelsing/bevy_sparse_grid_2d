@@ -19,13 +19,6 @@ pub struct Aabb {
 
 type Key = (i32, i32);
 
-fn key_from_point<const TILE_SIZE: usize>(point: Vec2) -> Key {
-    (
-        (point.x / TILE_SIZE as f32) as i32,
-        (point.y / TILE_SIZE as f32) as i32,
-    )
-}
-
 /// A spatial container that allows querying for entities that share one or more grid cell
 #[derive(Default, Reflect, Debug, Clone)]
 pub struct SparseGrid2d<const TILE_SIZE: usize = 1> {
@@ -42,7 +35,7 @@ impl<const TILE_SIZE: usize> SparseGrid2d<TILE_SIZE> {
 
     /// Insert an entity at the given point coordinate
     pub fn insert_point(&mut self, point: Vec2, entity: Entity) {
-        let key = key_from_point::<TILE_SIZE>(point);
+        let key = Self::key_from_point(point);
         self.map.entry(key).or_default().push(entity);
     }
 
@@ -60,7 +53,7 @@ impl<const TILE_SIZE: usize> SparseGrid2d<TILE_SIZE> {
     /// Get an iterator with the entities in the grid cells at the given point
     #[inline]
     pub fn point_iter(&'_ self, point: Vec2) -> impl Iterator<Item = Entity> + '_ {
-        let key = key_from_point::<TILE_SIZE>(point);
+        let key = Self::key_from_point(point);
 
         std::iter::once(key)
             .filter_map(|key| self.map.get(&key))
@@ -84,6 +77,13 @@ impl<const TILE_SIZE: usize> SparseGrid2d<TILE_SIZE> {
         for (_, vec) in self.map.iter_mut() {
             vec.clear()
         }
+    }
+
+    fn key_from_point(point: Vec2) -> Key {
+        (
+            (point.x / TILE_SIZE as f32) as i32,
+            (point.y / TILE_SIZE as f32) as i32,
+        )
     }
 }
 
