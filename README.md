@@ -46,8 +46,9 @@ See tests in lib.rs
 The `main` branch targets the latest bevy release.
 
 |bevy|bevy_sparse_grid_2d|
-|---|---|
-|0.9|main|
+|----|-------------------|
+|0.11|0.2, main          |
+|0.10|0.1                |
 
 ## License
 
