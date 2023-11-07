@@ -4,6 +4,8 @@ on:
       - main
   pull_request:
 
+name: ci
+
 jobs:
   check:
     name: Check
