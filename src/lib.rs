@@ -81,8 +81,8 @@ impl<const TILE_SIZE: usize> SparseGrid2d<TILE_SIZE> {
 
     fn key_from_point(point: Vec2) -> Key {
         (
-            (point.x / TILE_SIZE as f32) as i32,
-            (point.y / TILE_SIZE as f32) as i32,
+            (point.x / TILE_SIZE as f32).floor() as i32,
+            (point.y / TILE_SIZE as f32).floor() as i32,
         )
     }
 }
@@ -198,6 +198,7 @@ mod tests {
         assert!(keys.contains(&(-1, -1)));
         assert_eq!(keys.len(), 1);
     }
+
     #[test]
     fn query_points() {
         let mut db = SparseGrid2d::<TILE_SIZE>::default();
@@ -210,6 +211,20 @@ mod tests {
         assert!(matches.contains(&e1));
         assert!(matches.contains(&e2));
         assert_eq!(matches.len(), 2);
+    }
+
+    #[test]
+    fn query_points_negative() {
+        let mut db = SparseGrid2d::<TILE_SIZE>::default();
+        let e1 = Entity::from_raw(1);
+        let e2 = Entity::from_raw(2);
+        db.insert_point(vec2(0.5, 0.5), e1);
+        db.insert_point(vec2(-0.5, -0.5), e2);
+
+        let matches: HashSet<_> = db.point_iter(vec2(-0.5, -0.5)).collect();
+        assert!(!matches.contains(&e1));
+        assert!(matches.contains(&e2));
+        assert_eq!(matches.len(), 1);
     }
 
     #[test]
