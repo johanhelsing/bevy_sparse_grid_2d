@@ -2,20 +2,12 @@
 #![doc = include_str!("../README.md")]
 
 use bevy::{
+    math::bounding::Aabb2d,
     prelude::{Entity, Vec2},
     reflect::Reflect,
     utils::{HashMap, HashSet},
 };
 use smallvec::SmallVec;
-
-/// Axis aligned bounding box
-#[derive(Reflect, Debug, Default, Clone, Copy, PartialEq)]
-pub struct Aabb {
-    /// Lower left corner
-    pub min: Vec2,
-    /// Upper right corner
-    pub max: Vec2,
-}
 
 type Key = (i32, i32);
 
@@ -27,7 +19,7 @@ pub struct SparseGrid2d<const TILE_SIZE: usize = 1> {
 
 impl<const TILE_SIZE: usize> SparseGrid2d<TILE_SIZE> {
     /// Insert an entity in the given Aabb coordinates
-    pub fn insert_aabb(&mut self, aabb: impl Into<Aabb>, entity: Entity) {
+    pub fn insert_aabb(&mut self, aabb: impl Into<Aabb2d>, entity: Entity) {
         for key in KeyIter::new::<TILE_SIZE>(aabb) {
             self.map.entry(key).or_default().push(entity);
         }
@@ -39,11 +31,11 @@ impl<const TILE_SIZE: usize> SparseGrid2d<TILE_SIZE> {
         self.map.entry(key).or_default().push(entity);
     }
 
-    /// Get an iterator with the entities in the grid cells covered by the given Aabb
+    /// Get an iterator with the entities in the grid cells covered by the given [`Aabb2d`]
     ///
     /// may contain duplicates if some entities are in more than one grid cell
     #[inline]
-    pub fn aabb_iter(&'_ self, aabb: impl Into<Aabb>) -> impl Iterator<Item = Entity> + '_ {
+    pub fn aabb_iter(&'_ self, aabb: impl Into<Aabb2d>) -> impl Iterator<Item = Entity> + '_ {
         KeyIter::new::<TILE_SIZE>(aabb)
             .filter_map(|key| self.map.get(&key))
             .flatten()
@@ -61,9 +53,9 @@ impl<const TILE_SIZE: usize> SparseGrid2d<TILE_SIZE> {
             .copied()
     }
 
-    /// Creates a hash set with all the entities in the grid cells covered by the given Aabb
+    /// Creates a hash set with all the entities in the grid cells covered by the given [`Aabb2d`]
     #[inline]
-    pub fn query_aabb(&self, aabb: impl Into<Aabb>) -> HashSet<Entity> {
+    pub fn query_aabb(&self, aabb: impl Into<Aabb2d>) -> HashSet<Entity> {
         self.aabb_iter(aabb).collect()
     }
 
@@ -95,8 +87,8 @@ struct KeyIter {
 }
 
 impl KeyIter {
-    fn new<const TILE_SIZE: usize>(aabb: impl Into<Aabb>) -> Self {
-        let Aabb { min, max } = aabb.into();
+    fn new<const TILE_SIZE: usize>(aabb: impl Into<Aabb2d>) -> Self {
+        let Aabb2d { min, max } = aabb.into();
         // convert to key space
         let s = TILE_SIZE as f32;
         let min = ((min.x / s).floor() as i32, (min.y / s).floor() as i32);
@@ -132,7 +124,7 @@ impl Iterator for KeyIter {
 
 #[cfg(test)]
 mod tests {
-    use bevy::math::vec2;
+    use bevy::math::{bounding::Aabb2d, vec2};
     use bevy::prelude::default;
     use bevy::utils::HashSet;
 
@@ -142,7 +134,7 @@ mod tests {
 
     #[test]
     fn keys_single() {
-        let keys: Vec<Key> = KeyIter::new::<TILE_SIZE>(Aabb {
+        let keys: Vec<Key> = KeyIter::new::<TILE_SIZE>(Aabb2d {
             min: vec2(0.001, 0.001),
             max: vec2(0.001, 0.001),
         })
@@ -153,7 +145,7 @@ mod tests {
 
     #[test]
     fn keys_four_around_origin() {
-        let keys: Vec<Key> = KeyIter::new::<TILE_SIZE>(Aabb {
+        let keys: Vec<Key> = KeyIter::new::<TILE_SIZE>(Aabb2d {
             min: vec2(-0.001, -0.001),
             max: vec2(0.001, 0.001),
         })
@@ -170,7 +162,7 @@ mod tests {
         let entity = Entity::from_raw(123);
         let mut db = SparseGrid2d::<TILE_SIZE>::default();
         db.insert_aabb(
-            Aabb {
+            Aabb2d {
                 min: vec2(-0.001, -0.001),
                 max: vec2(0.001, 0.001),
             },
@@ -178,7 +170,7 @@ mod tests {
         );
 
         let matches: Vec<Entity> = db
-            .aabb_iter(Aabb {
+            .aabb_iter(Aabb2d {
                 min: vec2(0.001, 0.001),
                 max: vec2(0.001, 0.001),
             })
@@ -190,7 +182,7 @@ mod tests {
     #[test]
     fn key_negative() {
         let h = TILE_SIZE as f32 / 2.0;
-        let keys: Vec<Key> = KeyIter::new::<TILE_SIZE>(Aabb {
+        let keys: Vec<Key> = KeyIter::new::<TILE_SIZE>(Aabb2d {
             min: vec2(-h, -h),
             max: vec2(-h, -h),
         })
@@ -235,21 +227,21 @@ mod tests {
         let e3 = Entity::from_raw(3);
         let mut db: SparseGrid2d = default();
         db.insert_aabb(
-            Aabb {
+            Aabb2d {
                 min: vec2(-h, -h),
                 max: vec2(h, h),
             },
             e1,
         );
         db.insert_aabb(
-            Aabb {
+            Aabb2d {
                 min: vec2(h, h),
                 max: vec2(h, h),
             },
             e2,
         );
         db.insert_aabb(
-            Aabb {
+            Aabb2d {
                 min: vec2(-h, -h),
                 max: vec2(-h, -h),
             },
@@ -257,7 +249,7 @@ mod tests {
         );
 
         let matches: Vec<Entity> = db
-            .aabb_iter(Aabb {
+            .aabb_iter(Aabb2d {
                 min: vec2(-h, -h),
                 max: vec2(h, h),
             })
@@ -267,7 +259,7 @@ mod tests {
         assert!(matches.contains(&e2));
         assert!(matches.contains(&e3));
 
-        let matches = db.query_aabb(Aabb {
+        let matches = db.query_aabb(Aabb2d {
             min: vec2(-0.001, -0.001),
             max: vec2(-0.001, -0.001),
         });
@@ -276,7 +268,7 @@ mod tests {
         assert!(matches.contains(&e3));
 
         let matches: Vec<Entity> = db
-            .aabb_iter(Aabb {
+            .aabb_iter(Aabb2d {
                 min: vec2(-0.001, -0.001),
                 max: vec2(-0.001, -0.001),
             })

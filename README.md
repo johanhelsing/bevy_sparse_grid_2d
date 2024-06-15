@@ -11,11 +11,11 @@ Personally, I'm using it for simple stupid collision broad phase in a couple of 
 
 ```rust
 use bevy::{
-    utils::HashSet,
+    math::{bounding::Aabb2d, vec2},
     prelude::*,
-    math::vec2,
+    utils::HashSet,
 };
-use bevy_sparse_grid_2d::{Aabb, SparseGrid2d};
+use bevy_sparse_grid_2d::SparseGrid2d;
 const TILE_SIZE: usize = 1; // how wide each cell is
 
 let mut db = SparseGrid2d::<TILE_SIZE>::default();
@@ -31,10 +31,8 @@ assert!(matches.contains(&e2));
 assert_eq!(matches.len(), 2);
 
 // query an aabb
-let matches = db.query_aabb(Aabb {
-    min: vec2(0.0, 0.0),
-    max: vec2(1.0, 1.0)
-});
+let aabb = Aabb2d::new(Vec2::new(0.001, 0.001), Vec2::new(0.001, 0.001));
+let matches = db.query_aabb(aabb);
 assert!(matches.contains(&e1));
 assert!(matches.contains(&e2));
 assert_eq!(matches.len(), 2);
@@ -48,7 +46,8 @@ The `main` branch targets the latest bevy release.
 
 |bevy|bevy_sparse_grid_2d|
 |----|-------------------|
-|0.12|0.3, main          |
+|0.13|0.4, main          |
+|0.12|0.3                |
 |0.11|0.2                |
 |0.10|0.1                |
 
