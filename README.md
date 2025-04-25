@@ -13,7 +13,7 @@ Personally, I'm using it for simple stupid collision broad phase in a couple of 
 use bevy::{
     math::{bounding::Aabb2d, vec2},
     prelude::*,
-    utils::HashSet,
+    platform::collections::HashSet
 };
 use bevy_sparse_grid_2d::SparseGrid2d;
 const TILE_SIZE: usize = 1; // how wide each cell is

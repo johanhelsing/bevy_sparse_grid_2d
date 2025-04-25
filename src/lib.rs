@@ -3,9 +3,9 @@
 
 use bevy::{
     math::bounding::Aabb2d,
+    platform::collections::{HashMap, HashSet},
     prelude::{Entity, Vec2},
     reflect::Reflect,
-    utils::{HashMap, HashSet},
 };
 use smallvec::SmallVec;
 
@@ -126,7 +126,6 @@ impl Iterator for KeyIter {
 mod tests {
     use bevy::math::{bounding::Aabb2d, vec2};
     use bevy::prelude::default;
-    use bevy::utils::HashSet;
 
     use super::*;
 
