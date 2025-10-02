@@ -19,8 +19,8 @@ use bevy_sparse_grid_2d::SparseGrid2d;
 const TILE_SIZE: usize = 1; // how wide each cell is
 
 let mut db = SparseGrid2d::<TILE_SIZE>::default();
-let e1 = Entity::from_raw(1);
-let e2 = Entity::from_raw(2);
+let e1 = Entity::from_raw_u32(1).unwrap();
+let e2 = Entity::from_raw_u32(2).unwrap();
 db.insert_point(vec2(0.5, 0.5), e1);
 db.insert_point(vec2(0.499, 0.501), e2);
 
@@ -46,7 +46,8 @@ The `main` branch targets the latest bevy release.
 
 |bevy|bevy_sparse_grid_2d|
 |----|-------------------|
-|0.16|0.7, main          |
+|0.17|0.8, main          |
+|0.16|0.7                |
 |0.15|0.6                |
 |0.14|0.5                |
 |0.13|0.4                |

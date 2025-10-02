@@ -158,7 +158,7 @@ mod tests {
 
     #[test]
     fn matches() {
-        let entity = Entity::from_raw(123);
+        let entity = Entity::from_raw_u32(123).unwrap();
         let mut db = SparseGrid2d::<TILE_SIZE>::default();
         db.insert_aabb(
             Aabb2d {
@@ -193,8 +193,8 @@ mod tests {
     #[test]
     fn query_points() {
         let mut db = SparseGrid2d::<TILE_SIZE>::default();
-        let e1 = Entity::from_raw(1);
-        let e2 = Entity::from_raw(2);
+        let e1 = Entity::from_raw_u32(1).unwrap();
+        let e2 = Entity::from_raw_u32(2).unwrap();
         db.insert_point(vec2(0.5, 0.5), e1);
         db.insert_point(vec2(0.499, 0.501), e2);
 
@@ -207,8 +207,8 @@ mod tests {
     #[test]
     fn query_points_negative() {
         let mut db = SparseGrid2d::<TILE_SIZE>::default();
-        let e1 = Entity::from_raw(1);
-        let e2 = Entity::from_raw(2);
+        let e1 = Entity::from_raw_u32(1).unwrap();
+        let e2 = Entity::from_raw_u32(2).unwrap();
         db.insert_point(vec2(0.5, 0.5), e1);
         db.insert_point(vec2(-0.5, -0.5), e2);
 
@@ -221,9 +221,9 @@ mod tests {
     #[test]
     fn matches_complex() {
         let h = TILE_SIZE as f32 / 2.0;
-        let e1 = Entity::from_raw(1);
-        let e2 = Entity::from_raw(2);
-        let e3 = Entity::from_raw(3);
+        let e1 = Entity::from_raw_u32(1).unwrap();
+        let e2 = Entity::from_raw_u32(2).unwrap();
+        let e3 = Entity::from_raw_u32(3).unwrap();
         let mut db: SparseGrid2d = default();
         db.insert_aabb(
             Aabb2d {
@@ -278,9 +278,9 @@ mod tests {
     #[test]
     fn query_points_tilesize_10() {
         let mut db = SparseGrid2d::<10>::default();
-        let e1 = Entity::from_raw(1);
-        let e2 = Entity::from_raw(2);
-        let e3 = Entity::from_raw(3);
+        let e1 = Entity::from_raw_u32(1).unwrap();
+        let e2 = Entity::from_raw_u32(2).unwrap();
+        let e3 = Entity::from_raw_u32(3).unwrap();
         db.insert_point(vec2(12f32, 15f32), e1);
         db.insert_point(vec2(15f32, 12f32), e2);
         db.insert_point(vec2(15f32, 20f32), e3);
