@@ -2,7 +2,10 @@
 #![doc = include_str!("../README.md")]
 
 use bevy::{
-    platform::collections::{HashMap, HashSet}, prelude::{Entity, Vec2}, reflect::Reflect, shape::Aabb2d,
+    platform::collections::{HashMap, HashSet},
+    prelude::{Entity, Vec2},
+    reflect::Reflect,
+    shape::Aabb2d,
 };
 use smallvec::SmallVec;
 
