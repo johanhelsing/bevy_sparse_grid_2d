@@ -47,7 +47,8 @@ The `main` branch targets the latest bevy release.
 
 |bevy|bevy_sparse_grid_2d|
 |----|-------------------|
-|0.19|0.10, main         |
+|0.20|0.11, main         |
+|0.19|0.10               |
 |0.18|0.9                |
 |0.17|0.8                |
 |0.16|0.7                |
