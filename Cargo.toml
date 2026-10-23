@@ -10,5 +10,5 @@ repository = "https://github.com/johanhelsing/bevy_sparse_grid_2d"
 version = "0.10.0"
 
 [dependencies]
-bevy = { version = "0.19", default-features = false }
+bevy = { version = "0.20", default-features = false }
 smallvec = { version = "1.13", features = ["const_generics"] }

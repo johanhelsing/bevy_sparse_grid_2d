@@ -11,7 +11,8 @@ Personally, I'm using it for simple stupid collision broad phase in a couple of 
 
 ```rust
 use bevy::{
-    math::{bounding::Aabb2d, vec2},
+    math::vec2,
+    shape::Aabb2d,
     prelude::*,
     platform::collections::HashSet
 };

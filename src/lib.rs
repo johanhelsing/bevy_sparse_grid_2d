@@ -2,10 +2,7 @@
 #![doc = include_str!("../README.md")]
 
 use bevy::{
-    math::bounding::Aabb2d,
-    platform::collections::{HashMap, HashSet},
-    prelude::{Entity, Vec2},
-    reflect::Reflect,
+    platform::collections::{HashMap, HashSet}, prelude::{Entity, Vec2}, reflect::Reflect, shape::Aabb2d,
 };
 use smallvec::SmallVec;
 
@@ -124,7 +121,7 @@ impl Iterator for KeyIter {
 
 #[cfg(test)]
 mod tests {
-    use bevy::math::{bounding::Aabb2d, vec2};
+    use bevy::math::vec2;
     use bevy::prelude::default;
 
     use super::*;
